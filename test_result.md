@@ -162,11 +162,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Implemented MongoDB storage for CrackingAttempt and CrackingResult models. Database operations working."
+      - working: true
+        agent: "testing"
+        comment: "Database storage verified working correctly. MongoDB collections (cracking_attempts, cracking_results) properly storing data. CrackingAttempt model stores: id, passphrase, private_key, bitcoin_address, balance, attempted_at. CrackingResult model stores: id, passphrase, private_key, bitcoin_address, balance, discovered_at. Data persistence confirmed - attempts stored during cracking process and retrievable via /api/attempts endpoint. Clear data functionality working via /api/clear-data endpoint."
 
 frontend:
   - task: "Real-time Dashboard UI"
