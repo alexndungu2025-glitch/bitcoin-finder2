@@ -1,38 +1,165 @@
-.App {
-    text-align: center;
+/* Tailwind CSS base styles */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #111827;
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-    .App-logo {
-        animation: App-logo-spin infinite 20s linear;
-    }
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.App-header {
-    background-color: #0f0f10;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: calc(10px + 2vmin);
-    color: white;
+::-webkit-scrollbar-track {
+  background: #374151;
+  border-radius: 4px;
 }
 
-.App-link {
-    color: #61dafb;
+::-webkit-scrollbar-thumb {
+  background: #6B7280;
+  border-radius: 4px;
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+::-webkit-scrollbar-thumb:hover {
+  background: #9CA3AF;
+}
+
+/* Loading animation for running state */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Bitcoin orange color theme */
+.bitcoin-orange {
+  color: #f7931a;
+}
+
+.bg-bitcoin-orange {
+  background-color: #f7931a;
+}
+
+/* Success animation */
+@keyframes celebration {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.success-found {
+  animation: celebration 0.6s ease-in-out;
+}
+
+/* Custom button hover effects */
+.btn-primary {
+  @apply bg-orange-600 hover:bg-orange-700 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply bg-gray-600 hover:bg-gray-700 text-white font-medium px-4 py-2 rounded-md transition-colors duration-200;
+}
+
+/* Status indicators */
+.status-running {
+  @apply text-green-400;
+}
+
+.status-stopped {
+  @apply text-red-400;
+}
+
+.status-success {
+  @apply text-green-400;
+}
+
+/* Card styles */
+.card {
+  @apply bg-gray-800 rounded-lg p-6 shadow-lg;
+}
+
+.card-header {
+  @apply text-xl font-bold mb-4 text-orange-400;
+}
+
+/* Typography */
+.text-bitcoin {
+  color: #f7931a;
+}
+
+.text-success {
+  color: #10b981;
+}
+
+.text-danger {
+  color: #ef4444;
+}
+
+/* Form elements */
+input[type="text"], input[type="number"] {
+  @apply bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent;
+}
+
+/* Progress bars */
+.progress-bar {
+  @apply bg-gray-700 rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply bg-orange-500 h-full transition-all duration-500 ease-out;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .mobile-stack {
+    @apply flex-col space-y-3 space-x-0;
+  }
+  
+  .mobile-full {
+    @apply w-full;
+  }
+}
+
+/* Dark theme overrides */
+.dark {
+  @apply bg-gray-900 text-white;
+}
+
+/* Utility classes */
+.truncate-address {
+  @apply font-mono text-xs;
+  word-break: break-all;
+  max-width: 200px;
+}
+
+.highlight-success {
+  @apply bg-green-900 bg-opacity-30 border border-green-700;
+}
+
+.highlight-warning {
+  @apply bg-yellow-900 bg-opacity-30 border border-yellow-700;
+}
+
+.highlight-info {
+  @apply bg-blue-900 bg-opacity-30 border border-blue-700;
 }
