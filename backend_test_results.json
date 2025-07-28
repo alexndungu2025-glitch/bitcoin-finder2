@@ -1,0 +1,114 @@
+[
+  {
+    "test": "API Connectivity",
+    "success": true,
+    "message": "Backend is accessible and responding",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:17.147624"
+  },
+  {
+    "test": "Status Endpoint",
+    "success": true,
+    "message": "Status: {'is_running': True, 'current_passphrase': '172', 'total_attempts': 207, 'found_keys': 0, 'start_time': '2025-07-28T22:29:21.750755', 'progress': 10.55583885772565}",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:17.167653"
+  },
+  {
+    "test": "Clear Data Endpoint",
+    "success": true,
+    "message": "Data cleared successfully",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:17.194026"
+  },
+  {
+    "test": "Crypto Functions - password",
+    "success": true,
+    "message": "Address: 16ga2uqnF1NqpAuQeeg7sTCAdtDUwDyJav, Balance: 0.0 BTC",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:17.623189"
+  },
+  {
+    "test": "Crypto Functions - 123456",
+    "success": true,
+    "message": "Address: 1565qkBbLcuFP78f7MFKkK8jtHGDwdSgvX, Balance: 0.0 BTC",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:18.192984"
+  },
+  {
+    "test": "Crypto Functions - test",
+    "success": true,
+    "message": "Address: 1HKqKTMpBTZZ8H5zcqYEWYBaaWELrDEXeE, Balance: 0.0 BTC",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:18.780556"
+  },
+  {
+    "test": "Crypto Functions - bitcoin",
+    "success": true,
+    "message": "Address: 1E984zyYbNmeuumzEdqT8VSL8QGJi3byAD, Balance: 0.0 BTC",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.295375"
+  },
+  {
+    "test": "Start Cracking (When Stopped)",
+    "success": true,
+    "message": "Cracking started successfully",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.372526"
+  },
+  {
+    "test": "Start Cracking (When Running)",
+    "success": true,
+    "message": "Correctly rejected duplicate start",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.564996"
+  },
+  {
+    "test": "Status During Cracking",
+    "success": false,
+    "message": "Could not start cracking for test",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.582654"
+  },
+  {
+    "test": "Stop Cracking",
+    "success": true,
+    "message": "Cracking stopped successfully",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.601808"
+  },
+  {
+    "test": "Attempts Endpoint (Default)",
+    "success": true,
+    "message": "Retrieved 3 attempts",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.619852"
+  },
+  {
+    "test": "Attempts Endpoint (Limited)",
+    "success": true,
+    "message": "Retrieved 3 attempts with limit=5",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.638884"
+  },
+  {
+    "test": "Results Endpoint",
+    "success": true,
+    "message": "Retrieved 0 results",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.659324"
+  },
+  {
+    "test": "Clear Data Endpoint",
+    "success": true,
+    "message": "Data cleared successfully",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:19.677515"
+  },
+  {
+    "test": "Database Persistence",
+    "success": true,
+    "message": "Data persisted correctly: 4 attempts stored",
+    "details": null,
+    "timestamp": "2025-07-28T22:32:21.984834"
+  }
+]
