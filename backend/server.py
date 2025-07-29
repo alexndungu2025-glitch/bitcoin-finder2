@@ -132,9 +132,184 @@ async def check_bitcoin_balance(address: str) -> float:
         logging.error(f"Error checking balance for {address}: {e}")
         return 0.0
 
+# Advanced human-like passphrase generator
+class HumanPassphraseGenerator:
+    def __init__(self):
+        self.current_category = 0
+        self.current_index = 0
+        self.categories = self._build_passphrase_categories()
+    
+    def _build_passphrase_categories(self):
+        """Build comprehensive categories of human-like passphrases"""
+        categories = []
+        
+        # 1. Simple emotional phrases
+        emotional_phrases = [
+            "i love you", "you are good", "i am happy", "life is good", "love wins",
+            "i love bitcoin", "bitcoin is life", "crypto forever", "i love money",
+            "money is power", "be happy", "stay positive", "never give up",
+            "dream big", "live free", "i am rich", "success is mine", "i will win"
+        ]
+        categories.append(emotional_phrases)
+        
+        # 2. Personal information patterns
+        personal_patterns = [
+            "my name is john", "my birthday", "my secret", "my password",
+            "my private key", "my wallet", "my bitcoin", "my crypto",
+            "john doe", "jane smith", "mike jones", "sarah wilson",
+            "my dog spot", "my cat fluffy", "my car", "my house"
+        ]
+        categories.append(personal_patterns)
+        
+        # 3. Bitcoin/Crypto related phrases
+        crypto_phrases = [
+            "bitcoin to the moon", "hodl forever", "satoshi nakamoto",
+            "blockchain revolution", "crypto is king", "buy bitcoin",
+            "digital gold", "financial freedom", "decentralized money",
+            "peer to peer", "trust no one", "be your own bank",
+            "magic internet money", "number go up", "diamond hands"
+        ]
+        categories.append(crypto_phrases)
+        
+        # 4. Common sentences and sayings
+        common_sayings = [
+            "the quick brown fox", "hello world", "good morning",
+            "have a nice day", "see you later", "take care",
+            "god bless you", "thank you", "please help me",
+            "i need help", "save me", "protect me", "bless me"
+        ]
+        categories.append(common_sayings)
+        
+        # 5. Security-minded phrases
+        security_phrases = [
+            "keep it secret", "dont tell anyone", "this is private",
+            "top secret", "classified", "confidential", "secure password",
+            "safe and sound", "lock it up", "hide it well", "protect this"
+        ]
+        categories.append(security_phrases)
+        
+        # 6. Date and time patterns
+        date_patterns = []
+        for year in range(1980, 2025):
+            date_patterns.extend([
+                f"born in {year}", f"year {year}", f"since {year}",
+                f"remember {year}", f"bitcoin {year}"
+            ])
+        for month in ["january", "february", "march", "april", "may", "june",
+                     "july", "august", "september", "october", "november", "december"]:
+            date_patterns.extend([
+                f"born in {month}", f"{month} baby", f"love {month}"
+            ])
+        categories.append(date_patterns)
+        
+        # 7. Family and relationships
+        family_phrases = [
+            "i love mom", "i love dad", "my family", "my wife", "my husband",
+            "my children", "my son", "my daughter", "my brother", "my sister",
+            "mom and dad", "family first", "love my family", "my dear wife",
+            "my beloved", "my sweetheart", "my darling", "my precious"
+        ]
+        categories.append(family_phrases)
+        
+        # 8. Motivational phrases
+        motivational = [
+            "never surrender", "keep fighting", "stay strong", "believe in yourself",
+            "you can do it", "dont give up", "push forward", "reach for stars",
+            "make it happen", "success awaits", "victory is mine", "i am winner",
+            "conquer all", "unstoppable", "unlimited power", "infinite wealth"
+        ]
+        categories.append(motivational)
+        
+        # 9. Location-based phrases
+        locations = [
+            "new york city", "los angeles", "san francisco", "bitcoin city",
+            "wall street", "silicon valley", "main street", "home sweet home",
+            "united states", "america first", "god bless america", "land of free"
+        ]
+        categories.append(locations)
+        
+        # 10. Variations with numbers and symbols
+        base_phrases = ["password", "secret", "private", "bitcoin", "crypto", "money"]
+        variations = []
+        for phrase in base_phrases:
+            for num in range(1, 1000):
+                variations.extend([
+                    f"{phrase}{num}", f"{num}{phrase}", f"{phrase} {num}",
+                    f"my {phrase}", f"{phrase} key", f"{phrase} wallet",
+                    f"super {phrase}", f"secret {phrase}", f"private {phrase}"
+                ])
+        categories.append(variations)
+        
+        return categories
+    
+    def get_next_passphrase(self):
+        """Get the next unique passphrase in sequence"""
+        if self.current_category >= len(self.categories):
+            # Generate more creative combinations when we run out
+            return self._generate_creative_combination()
+        
+        current_list = self.categories[self.current_category]
+        
+        if self.current_index >= len(current_list):
+            # Move to next category
+            self.current_category += 1
+            self.current_index = 0
+            return self.get_next_passphrase()
+        
+        passphrase = current_list[self.current_index]
+        self.current_index += 1
+        return passphrase
+    
+    def _generate_creative_combination(self):
+        """Generate creative combinations when basic lists are exhausted"""
+        import random
+        
+        # Combine words from different categories
+        adjectives = ["secret", "private", "hidden", "secure", "safe", "precious", "special"]
+        nouns = ["key", "password", "wallet", "treasure", "gold", "money", "fortune"]
+        verbs = ["keep", "save", "protect", "hide", "store", "guard", "secure"]
+        
+        patterns = [
+            f"{random.choice(adjectives)} {random.choice(nouns)}",
+            f"{random.choice(verbs)} my {random.choice(nouns)}",
+            f"i {random.choice(verbs)} {random.choice(nouns)}",
+            f"my {random.choice(adjectives)} {random.choice(nouns)}"
+        ]
+        
+        return random.choice(patterns)
+
+# Global passphrase generator instance
+passphrase_generator = HumanPassphraseGenerator()
+
+async def is_passphrase_already_checked(passphrase: str) -> bool:
+    """Check if passphrase was already tested"""
+    # First check in-memory cache for speed
+    if passphrase in cracking_state["checked_passphrases"]:
+        return True
+    
+    # Check in database for persistence
+    existing = await db.checked_passphrases.find_one({"passphrase": passphrase})
+    if existing:
+        # Add to in-memory cache
+        cracking_state["checked_passphrases"].add(passphrase)
+        return True
+    
+    return False
+
+async def mark_passphrase_as_checked(passphrase: str):
+    """Mark passphrase as checked to avoid future duplicates"""
+    # Add to in-memory cache
+    cracking_state["checked_passphrases"].add(passphrase)
+    
+    # Store in database for persistence
+    checked = CheckedPassphrase(passphrase=passphrase)
+    await db.checked_passphrases.insert_one(checked.dict())
+
 # Common passphrases to try
 def generate_common_passphrases():
-    """Generate list of common passphrases to try"""
+    """Generate list of common passphrases to try - DEPRECATED"""
+    # This function is now deprecated in favor of HumanPassphraseGenerator
+    # Keeping for backward compatibility
     passphrases = []
     
     # Simple words
