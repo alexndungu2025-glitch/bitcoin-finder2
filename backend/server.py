@@ -60,6 +60,11 @@ class CrackingAttempt(BaseModel):
     balance: float
     attempted_at: datetime = Field(default_factory=datetime.utcnow)
 
+class CheckedPassphrase(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    passphrase: str
+    checked_at: datetime = Field(default_factory=datetime.utcnow)
+
 class CrackingStatus(BaseModel):
     is_running: bool
     current_passphrase: str
