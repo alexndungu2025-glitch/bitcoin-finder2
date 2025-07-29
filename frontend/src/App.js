@@ -17,7 +17,8 @@ function App() {
   
   const [results, setResults] = useState([]);
   const [recentAttempts, setRecentAttempts] = useState([]);
-  const [testPassphrase, setTestPassphrase] = useState("password123");
+  const [testPassphrase, setTestPassphrase] = useState("i love you");
+  const [testResult, setTestResult] = useState(null);
   const [stats, setStats] = useState({
     total_attempts: 0,
     total_successful_cracks: 0,
