@@ -18,7 +18,12 @@ function App() {
   const [results, setResults] = useState([]);
   const [recentAttempts, setRecentAttempts] = useState([]);
   const [testPassphrase, setTestPassphrase] = useState("password123");
-  const [testResult, setTestResult] = useState(null);
+  const [stats, setStats] = useState({
+    total_attempts: 0,
+    total_successful_cracks: 0,
+    total_checked_passphrases: 0,
+    success_rate_percentage: 0
+  });
 
   // Fetch status every 2 seconds
   useEffect(() => {
