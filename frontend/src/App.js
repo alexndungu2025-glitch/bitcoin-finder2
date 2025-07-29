@@ -299,22 +299,54 @@ function App() {
             <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
               {/* Successful Cracks */}
               <div className="bg-gray-800 rounded-lg p-6">
-                <h3 className="text-lg font-bold mb-4 text-green-400">🎯 Successful Cracks</h3>
+                <h3 className="text-lg font-bold mb-4 text-green-400">🎯 Successful Cracks & Transfer Info</h3>
                 
                 {results.length === 0 ? (
                   <div className="text-gray-500 text-center py-8">
                     No successful cracks yet...
+                    <br />
+                    <span className="text-sm">Bot is checking human-like passphrases continuously</span>
                   </div>
                 ) : (
-                  <div className="space-y-3 max-h-96 overflow-y-auto">
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
                     {results.map((result, index) => (
                       <div key={index} className="bg-green-900/30 border border-green-700 p-4 rounded-lg">
-                        <div className="text-green-400 font-bold mb-2">💰 {formatBalance(result.balance)}</div>
-                        <div className="text-sm space-y-1">
-                          <div><strong>Passphrase:</strong> <span className="font-mono">{result.passphrase}</span></div>
-                          <div><strong>Address:</strong> <span className="font-mono text-xs break-all">{result.bitcoin_address}</span></div>
-                          <div><strong>Private Key:</strong> <span className="font-mono text-xs break-all">{result.private_key}</span></div>
-                          <div><strong>Found:</strong> {formatTime(result.discovered_at)}</div>
+                        <div className="flex justify-between items-center mb-3">
+                          <div className="text-green-400 font-bold text-xl">💰 {formatBalance(result.balance)}</div>
+                          <div className="text-xs text-gray-400">{formatTime(result.discovered_at)}</div>
+                        </div>
+                        
+                        <div className="space-y-2 text-sm">
+                          <div className="bg-gray-800 p-2 rounded">
+                            <strong className="text-orange-400">Passphrase:</strong> 
+                            <span className="font-mono ml-2 text-white">"{result.passphrase}"</span>
+                          </div>
+                          
+                          <div className="bg-gray-800 p-2 rounded">
+                            <strong className="text-blue-400">Bitcoin Address:</strong>
+                            <div className="font-mono text-xs break-all text-white mt-1">{result.bitcoin_address}</div>
+                          </div>
+                          
+                          <div className="bg-gray-800 p-2 rounded">
+                            <strong className="text-purple-400">Private Key (Hex):</strong>
+                            <div className="font-mono text-xs break-all text-white mt-1">{result.private_key}</div>
+                          </div>
+                          
+                          {result.private_key_wif && (
+                            <div className="bg-gray-800 p-2 rounded">
+                              <strong className="text-yellow-400">Private Key (WIF):</strong>
+                              <div className="font-mono text-xs break-all text-white mt-1">{result.private_key_wif}</div>
+                            </div>
+                          )}
+                          
+                          <div className="bg-red-900/30 border border-red-700 p-2 rounded">
+                            <strong className="text-red-400">⚠️ Transfer Instructions:</strong>
+                            <div className="text-xs text-gray-300 mt-1">
+                              1. Import WIF key into Electrum, Bitcoin Core, or blockchain.info<br/>
+                              2. Send funds to your secure wallet immediately<br/>
+                              3. Keep this information private and secure
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
