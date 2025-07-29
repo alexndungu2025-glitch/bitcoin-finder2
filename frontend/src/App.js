@@ -214,11 +214,15 @@ function App() {
                 </button>
                 
                 {testResult && (
-                  <div className="bg-gray-700 p-3 rounded-md text-sm">
-                    <div className="mb-2"><strong>Passphrase:</strong> {testResult.passphrase}</div>
-                    <div className="mb-2"><strong>Private Key:</strong> <span className="font-mono text-xs break-all">{testResult.private_key}</span></div>
-                    <div className="mb-2"><strong>Address:</strong> <span className="font-mono text-xs">{testResult.bitcoin_address}</span></div>
+                  <div className="bg-gray-700 p-3 rounded-md text-sm space-y-2">
+                    <div><strong>Passphrase:</strong> "{testResult.passphrase}"</div>
+                    <div><strong>Private Key (Hex):</strong> <span className="font-mono text-xs break-all">{testResult.private_key}</span></div>
+                    {testResult.private_key_wif && (
+                      <div><strong>Private Key (WIF):</strong> <span className="font-mono text-xs break-all">{testResult.private_key_wif}</span></div>
+                    )}
+                    <div><strong>Address:</strong> <span className="font-mono text-xs">{testResult.bitcoin_address}</span></div>
                     <div><strong>Balance:</strong> <span className={testResult.balance > 0 ? "text-green-400" : "text-gray-400"}>{formatBalance(testResult.balance)}</span></div>
+                    <div><strong>Already Checked:</strong> <span className={testResult.already_checked ? "text-yellow-400" : "text-gray-400"}>{testResult.already_checked ? "Yes" : "No"}</span></div>
                   </div>
                 )}
               </div>
