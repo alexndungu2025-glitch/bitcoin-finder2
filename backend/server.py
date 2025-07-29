@@ -38,7 +38,9 @@ cracking_state = {
     "total_attempts": 0,
     "found_keys": [],
     "start_time": None,
-    "progress": 0
+    "progress": 0,
+    "checked_passphrases": set(),  # In-memory cache for faster lookup
+    "passphrase_generator": None
 }
 
 # Define Models
