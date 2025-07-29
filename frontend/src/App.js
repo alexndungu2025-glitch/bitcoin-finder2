@@ -55,20 +55,32 @@ function App() {
       }
     };
 
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get(`${API}/stats`);
+        setStats(response.data);
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+      }
+    };
+
     // Initial fetch
     fetchStatus();
     fetchResults();
     fetchRecentAttempts();
+    fetchStats();
 
     // Set up intervals
     const statusInterval = setInterval(fetchStatus, 2000);
     const resultsInterval = setInterval(fetchResults, 10000);
     const attemptsInterval = setInterval(fetchRecentAttempts, 5000);
+    const statsInterval = setInterval(fetchStats, 15000);
 
     return () => {
       clearInterval(statusInterval);
       clearInterval(resultsInterval);
       clearInterval(attemptsInterval);
+      clearInterval(statsInterval);
     };
   }, []);
 
