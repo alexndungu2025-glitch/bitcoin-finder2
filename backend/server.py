@@ -475,7 +475,7 @@ async def start_cracking(background_tasks: BackgroundTasks):
     if cracking_state["is_running"]:
         raise HTTPException(status_code=400, detail="Cracking is already running")
     
-    # Reset state
+    # Reset state (but keep checked passphrases to avoid duplicates)
     cracking_state["total_attempts"] = 0
     cracking_state["found_keys"] = []
     cracking_state["progress"] = 0
@@ -483,7 +483,7 @@ async def start_cracking(background_tasks: BackgroundTasks):
     # Start cracking in background
     background_tasks.add_task(crack_passphrases)
     
-    return {"message": "Cracking started", "status": "running"}
+    return {"message": "Continuous cracking started - will run indefinitely until stopped", "status": "running"}
 
 @api_router.post("/stop-cracking")
 async def stop_cracking():
@@ -492,13 +492,20 @@ async def stop_cracking():
 
 @api_router.get("/status", response_model=CrackingStatus)
 async def get_status():
+    # Calculate attempts per hour for progress metric
+    attempts_per_hour = 0
+    if cracking_state["start_time"] and cracking_state["total_attempts"] > 0:
+        elapsed_hours = (datetime.utcnow() - cracking_state["start_time"]).total_seconds() / 3600
+        if elapsed_hours > 0:
+            attempts_per_hour = cracking_state["total_attempts"] / elapsed_hours
+    
     return CrackingStatus(
         is_running=cracking_state["is_running"],
         current_passphrase=cracking_state["current_passphrase"],
         total_attempts=cracking_state["total_attempts"],
         found_keys=len(cracking_state["found_keys"]),
         start_time=cracking_state["start_time"],
-        progress=cracking_state["progress"]
+        progress=attempts_per_hour  # Now represents attempts per hour
     )
 
 @api_router.get("/results", response_model=List[CrackingResult])
@@ -515,9 +522,30 @@ async def get_attempts(limit: int = 100):
 async def clear_data():
     await db.cracking_attempts.delete_many({})
     await db.cracking_results.delete_many({})
+    await db.checked_passphrases.delete_many({})  # Also clear checked passphrases
     cracking_state["total_attempts"] = 0
     cracking_state["found_keys"] = []
-    return {"message": "All data cleared"}
+    cracking_state["checked_passphrases"].clear()  # Clear in-memory cache
+    return {"message": "All data cleared including checked passphrase history"}
+
+@api_router.get("/stats")
+async def get_stats():
+    """Get comprehensive statistics"""
+    total_attempts = await db.cracking_attempts.count_documents({})
+    total_results = await db.cracking_results.count_documents({})
+    total_checked = await db.checked_passphrases.count_documents({})
+    
+    # Calculate success rate
+    success_rate = (total_results / max(total_attempts, 1)) * 100
+    
+    return {
+        "total_attempts": total_attempts,
+        "total_successful_cracks": total_results,
+        "total_checked_passphrases": total_checked,
+        "success_rate_percentage": success_rate,
+        "current_session_attempts": cracking_state["total_attempts"],
+        "is_running": cracking_state["is_running"]
+    }
 
 # Test endpoint to verify crypto functions
 @api_router.post("/test-crypto")
@@ -525,12 +553,15 @@ async def test_crypto(passphrase: str):
     private_key = passphrase_to_private_key(passphrase)
     bitcoin_address = private_key_to_bitcoin_address(private_key)
     balance = await check_bitcoin_balance(bitcoin_address)
+    wif_key = private_key_to_wif(private_key)
     
     return {
         "passphrase": passphrase,
         "private_key": private_key,
+        "private_key_wif": wif_key,
         "bitcoin_address": bitcoin_address,
-        "balance": balance
+        "balance": balance,
+        "already_checked": await is_passphrase_already_checked(passphrase)
     }
 
 # Include the router in the main app
