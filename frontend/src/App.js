@@ -234,7 +234,7 @@ function App() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                 <div className="bg-gray-700 p-4 rounded-lg text-center">
                   <div className="text-2xl font-bold">{status.total_attempts}</div>
-                  <div className="text-sm text-gray-400">Total Attempts</div>
+                  <div className="text-sm text-gray-400">Session Attempts</div>
                 </div>
                 
                 <div className="bg-gray-700 p-4 rounded-lg text-center">
@@ -243,8 +243,8 @@ function App() {
                 </div>
                 
                 <div className="bg-gray-700 p-4 rounded-lg text-center">
-                  <div className="text-2xl font-bold">{status.progress.toFixed(1)}%</div>
-                  <div className="text-sm text-gray-400">Progress</div>
+                  <div className="text-2xl font-bold">{Math.round(status.progress)}</div>
+                  <div className="text-sm text-gray-400">Attempts/Hour</div>
                 </div>
                 
                 <div className="bg-gray-700 p-4 rounded-lg text-center">
@@ -255,17 +255,43 @@ function App() {
                 </div>
               </div>
               
-              {/* Progress Bar */}
+              {/* Overall Statistics */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                <div className="bg-gray-600 p-3 rounded-lg text-center">
+                  <div className="text-lg font-bold text-blue-400">{stats.total_checked_passphrases}</div>
+                  <div className="text-xs text-gray-400">Total Checked</div>
+                </div>
+                
+                <div className="bg-gray-600 p-3 rounded-lg text-center">
+                  <div className="text-lg font-bold text-yellow-400">{stats.total_attempts}</div>
+                  <div className="text-xs text-gray-400">All-Time Attempts</div>
+                </div>
+                
+                <div className="bg-gray-600 p-3 rounded-lg text-center">
+                  <div className="text-lg font-bold text-green-400">{stats.total_successful_cracks}</div>
+                  <div className="text-xs text-gray-400">Total Successes</div>
+                </div>
+                
+                <div className="bg-gray-600 p-3 rounded-lg text-center">
+                  <div className="text-lg font-bold text-purple-400">{stats.success_rate_percentage.toFixed(4)}%</div>
+                  <div className="text-xs text-gray-400">Success Rate</div>
+                </div>
+              </div>
+              
+              {/* Progress Bar - now shows continuous operation */}
               <div className="bg-gray-700 rounded-full h-3 mb-4">
                 <div
-                  className="bg-orange-500 h-3 rounded-full transition-all duration-500"
-                  style={{ width: `${status.progress}%` }}
+                  className={`h-3 rounded-full transition-all duration-500 ${
+                    status.is_running ? "bg-green-500 animate-pulse" : "bg-gray-500"
+                  }`}
+                  style={{ width: status.is_running ? "100%" : "0%" }}
                 ></div>
               </div>
               
               <div className="space-y-2 text-sm">
-                <div><strong>Current Passphrase:</strong> <span className="font-mono text-orange-300">{status.current_passphrase || "N/A"}</span></div>
+                <div><strong>Current Passphrase:</strong> <span className="font-mono text-orange-300">"{status.current_passphrase || "N/A"}"</span></div>
                 <div><strong>Started:</strong> {formatTime(status.start_time)}</div>
+                <div><strong>Mode:</strong> <span className="text-green-400">Continuous Operation (No Duplicates)</span></div>
               </div>
             </div>
 
